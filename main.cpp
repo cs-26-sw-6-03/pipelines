@@ -35,100 +35,54 @@ public:
     }
     
     void initializeInputs() {
-        // 1. Video test source
-        inputs["test_1080p"] = 
-            "videotestsrc pattern=0 ! "
-            "video/x-raw,width=1920,height=1080,framerate=30/1,format=I420 ! "
-            "imxvideoconvert_g2d ! video/x-raw,format=NV12";
-        
-        inputs["test_4k"] = 
-            "videotestsrc pattern=0 ! "
-            "video/x-raw,width=3840,height=2160,framerate=30/1,format=I420 ! "
-            "imxvideoconvert_g2d ! video/x-raw,format=NV12";
-        
-        // 2. Arducam IMX477
-        inputs["imx477_1080p"] = 
-            "v4l2src device=/dev/video0 ! "
-            "video/x-raw,width=1920,height=1080,framerate=30/1,format=NV12";
-        
-        inputs["imx477_4k"] = 
-            "v4l2src device=/dev/video0 ! "
-            "video/x-raw,width=3840,height=2160,framerate=30/1,format=NV12";
-        
-        inputs["imx477_1080p_60fps"] = 
-            "v4l2src device=/dev/video0 ! "
-            "video/x-raw,width=1920,height=1080,framerate=60/1,format=NV12";
-        
-        // 3. Generic camera
-        inputs["generic_camera"] = 
-            "v4l2src device=/dev/video0 ! "
-            "video/x-raw,width=1920,height=1080,framerate=30/1 ! "
-            "imxvideoconvert_g2d ! video/x-raw,format=NV12";
-        
-        // 4. File input - H.264
-        inputs["file_h264"] = 
+        // 1. File input with VPU decode (H.264)
+        inputs["file_vpu"] = 
             "filesrc location=input.mp4 ! "
             "qtdemux ! h264parse ! vpudec_h264 ! "
             "imxvideoconvert_g2d ! video/x-raw,format=NV12";
         
-        // 4. File input - H.265
-        inputs["file_h265"] = 
+        // 2. Camera IMX477 (MIPI)
+        inputs["imx477"] = 
+            "v4l2src device=/dev/video0 ! "
+            "video/x-raw,width=1920,height=1080,framerate=30/1,format=NV12";
+        
+        // 3. Generic file input
+        inputs["file_generic"] = 
             "filesrc location=input.mp4 ! "
-            "qtdemux ! h265parse ! vpudec_h265 ! "
-            "imxvideoconvert_g2d ! video/x-raw,format=NV12";
+            "decodebin ! videoconvert ! video/x-raw,format=NV12";
+        
+        // 4. Generic webcam
+        inputs["webcam"] = 
+            "v4l2src device=/dev/video0 ! "
+            "videoconvert ! video/x-raw,format=NV12";
     }
     
     void initializeOutputs() {
-        // 1. File output with VPU encoding - H.264
-        outputs["file_h264_mp4"] = 
+        // 1. File output with VPU encoding (H.264)
+        outputs["file_vpu"] = 
             "vpuenc_h264 bitrate=5000 gop-size=30 ! "
             "h264parse ! qtmux ! "
             "filesink location=output.mp4";
         
-        outputs["file_h264_mkv"] = 
-            "vpuenc_h264 bitrate=5000 gop-size=30 ! "
-            "h264parse ! matroskamux ! "
-            "filesink location=output.mkv";
-        
-        // 1. File output with VPU encoding - H.265
-        outputs["file_h265_mp4"] = 
-            "vpuenc_h265 bitrate=4000 gop-size=30 ! "
-            "h265parse ! qtmux ! "
-            "filesink location=output.mp4";
-        
-        outputs["file_h265_mkv"] = 
-            "vpuenc_h265 bitrate=4000 gop-size=30 ! "
-            "h265parse ! matroskamux ! "
-            "filesink location=output.mkv";
-        
-        // 2. UDP streaming - H.264 RTP
-        outputs["udp_h264_rtp"] = 
+        // 2. Network UDP/RTP with hardware encoding
+        outputs["network_udp"] = 
             "vpuenc_h264 bitrate=3000 gop-size=30 ! "
             "h264parse ! rtph264pay config-interval=1 pt=96 ! "
             "udpsink host=192.168.1.100 port=5000";
         
-        // 2. UDP streaming - H.265 RTP
-        outputs["udp_h265_rtp"] = 
-            "vpuenc_h265 bitrate=2500 gop-size=30 ! "
-            "h265parse ! rtph265pay config-interval=1 pt=96 ! "
-            "udpsink host=192.168.1.100 port=5000";
+        // 3. Generic file output (software encode)
+        outputs["file_generic"] = 
+            "videoconvert ! x264enc bitrate=5000 ! "
+            "h264parse ! qtmux ! "
+            "filesink location=output.mp4";
         
-        // 2. UDP streaming - MPEG-TS
-        outputs["udp_mpegts"] = 
-            "vpuenc_h264 bitrate=3000 gop-size=30 ! "
-            "h264parse ! mpegtsmux ! "
-            "udpsink host=192.168.1.100 port=5000";
-        
-        // 3. Display to screen - KMS (preferred)
-        outputs["display_kms"] = 
+        // 4. Display output (Wayland/KMS)
+        outputs["display"] = 
             "kmssink";
         
-        outputs["display_kms_fullscreen"] = 
-            "kmssink fullscreen=true";
-        
-        // 3. Display to screen - Framebuffer (fallback)
+        // 4b. Display output (framebuffer fallback)
         outputs["display_fb"] = 
-            "imxvideoconvert_g2d ! video/x-raw,format=RGB16 ! "
+            "videoconvert ! video/x-raw,format=RGB16 ! "
             "fbdevsink device=/dev/fb0";
     }
     
@@ -329,12 +283,11 @@ int main(int argc, char *argv[]) {
         manager.listOutputs();
         
         std::cout << "\nExamples:" << std::endl;
-        std::cout << "  " << argv[0] << " test_1080p display_kms" << std::endl;
-        std::cout << "  " << argv[0] << " imx477_1080p file_h264_mp4" << std::endl;
-        std::cout << "  " << argv[0] << " imx477_4k udp_h264_rtp" << std::endl;
-        std::cout << "  " << argv[0] << " file_h264 display_kms input.mp4" << std::endl;
-        std::cout << "  " << argv[0] << " generic_camera file_h264_mp4 \"\" output.mp4" << std::endl;
-        std::cout << "  " << argv[0] << " imx477_1080p udp_h264_rtp \"\" 192.168.1.100:5000" << std::endl;
+        std::cout << "  " << argv[0] << " file_vpu display        # File to display (VPU decode)" << std::endl;
+        std::cout << "  " << argv[0] << " imx477 file_vpu        # Camera to file (VPU encode)" << std::endl;
+        std::cout << "  " << argv[0] << " file_vpu network_udp   # File to network stream" << std::endl;
+        std::cout << "  " << argv[0] << " webcam display         # Webcam to display" << std::endl;
+        std::cout << "  " << argv[0] << " file_vpu file_vpu input.mp4 output.mp4  # Transcode" << std::endl;
         
         return 1;
     }
