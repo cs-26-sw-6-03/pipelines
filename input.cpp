@@ -38,7 +38,7 @@ public:
         // 1. File input with VPU decode (H.264)
         inputs["file_vpu"] = 
             "filesrc location=input.mp4 ! "
-            "qtdemux ! h264parse ! vpudec ! video/x-raw";
+            "qtdemux ! h264parse ! vpudec";
         
         // 2. Camera IMX477 (MIPI)
         inputs["imx477"] = 
@@ -48,12 +48,12 @@ public:
         // 3. Generic file input
         inputs["file_generic"] = 
             "filesrc location=input.mp4 ! "
-            "decodebin ! videoconvert ! video/x-raw";
+            "decodebin ! videoconvert";
         
         // 4. Generic webcam
         inputs["webcam"] = 
             "v4l2src device=/dev/video0 ! "
-            "videoconvert ! video/x-raw";
+            "videoconvert";
     }
     
     void initializeOutputs() {

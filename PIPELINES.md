@@ -8,7 +8,7 @@ Mix and match: `[INPUT] ! [OUTPUT]`
 
 ### 1. File Input (VPU Decoded) - H.264
 ```bash
-filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! video/x-raw
+filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec
 ```
 
 ### 2. Camera IMX477 (MIPI)
@@ -18,12 +18,12 @@ v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=30/1,f
 
 ### 3. Generic File Input
 ```bash
-filesrc location=input.mp4 ! decodebin ! videoconvert ! video/x-raw
+filesrc location=input.mp4 ! decodebin ! videoconvert
 ```
 
 ### 4. Generic Webcam
 ```bash
-v4l2src device=/dev/video0 ! videoconvert ! video/x-raw
+v4l2src device=/dev/video0 ! videoconvert
 ```
 
 ---
