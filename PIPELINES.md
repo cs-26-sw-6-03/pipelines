@@ -50,6 +50,11 @@ videoconvert ! x264enc bitrate=5000 ! h264parse ! qtmux ! filesink location=outp
 kmssink
 ```
 
+### 4b. Display Output (Wayland Surface)
+```bash
+waylandsink
+```
+
 ### 4b. Display Output (Framebuffer - fallback)
 ```bash
 videoconvert ! video/x-raw,format=RGB16 ! fbdevsink device=/dev/fb0
@@ -64,6 +69,13 @@ videoconvert ! video/x-raw,format=RGB16 ! fbdevsink device=/dev/fb0
 gst-launch-1.0 \
     filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
     kmssink
+```
+
+### File → Wayland
+```bash
+gst-launch-1.0 \
+    filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
+    waylandsink
 ```
 
 ### Camera → File
@@ -87,6 +99,13 @@ gst-launch-1.0 \
     kmssink
 ```
 
+### Camera → Wayland
+```bash
+gst-launch-1.0 \
+    v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=30/1,format=NV12 ! \
+    waylandsink
+```
+
 ---
 
 ## CREATE TEST FILE
@@ -107,5 +126,5 @@ gst-launch-1.0 videotestsrc num-buffers=300 ! video/x-raw,width=1920,height=1080
 
 ```bash
 gst-launch-1.0 udpsrc port=5000 caps="application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96" ! \
-    rtph264depay ! h264parse ! vpudec ! kmssink
+    rtph264depay ! h264parse ! vpudec ! waylandsink
 ```

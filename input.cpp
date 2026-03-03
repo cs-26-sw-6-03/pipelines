@@ -81,6 +81,10 @@ public:
         outputs["display"] = 
             "kmssink";
         
+        // 4b. Display output (Wayland surface)
+        outputs["wayland"] = 
+            "waylandsink";
+        
         // 4b. Display output (framebuffer fallback)
         outputs["display_fb"] = 
             "videoconvert ! video/x-raw,format=RGB16 ! "
@@ -285,6 +289,7 @@ int main(int argc, char *argv[]) {
         
         std::cout << "\nExamples:" << std::endl;
         std::cout << "  " << argv[0] << " file_vpu display        # File to display (VPU decode)" << std::endl;
+        std::cout << "  " << argv[0] << " file_vpu wayland        # File to Wayland surface" << std::endl;
         std::cout << "  " << argv[0] << " imx477 file_vpu        # Camera to file (VPU encode)" << std::endl;
         std::cout << "  " << argv[0] << " file_vpu network_udp   # File to network stream" << std::endl;
         std::cout << "  " << argv[0] << " webcam display         # Webcam to display" << std::endl;
