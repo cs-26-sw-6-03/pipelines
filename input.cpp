@@ -79,11 +79,11 @@ public:
         
         // 4. Display output (Wayland/KMS)
         outputs["display"] = 
-            "kmssink";
+            "queue ! videoconvert ! kmssink";
         
         // 4b. Display output (Wayland surface)
         outputs["wayland"] = 
-            "waylandsink";
+            "queue ! videoconvert ! waylandsink";
         
         // 4b. Display output (framebuffer fallback)
         outputs["display_fb"] = 

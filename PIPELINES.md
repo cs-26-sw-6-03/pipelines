@@ -47,12 +47,12 @@ videoconvert ! x264enc bitrate=5000 ! h264parse ! qtmux ! filesink location=outp
 
 ### 4. Display Output (Wayland/KMS)
 ```bash
-kmssink
+queue ! videoconvert ! kmssink
 ```
 
 ### 4b. Display Output (Wayland Surface)
 ```bash
-waylandsink
+queue ! videoconvert ! waylandsink
 ```
 
 ### 4b. Display Output (Framebuffer - fallback)
@@ -68,14 +68,14 @@ videoconvert ! video/x-raw,format=RGB16 ! fbdevsink device=/dev/fb0
 ```bash
 gst-launch-1.0 \
     filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
-    kmssink
+    queue ! videoconvert ! kmssink
 ```
 
 ### File → Wayland
 ```bash
 gst-launch-1.0 \
     filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
-    waylandsink
+    queue ! videoconvert ! waylandsink
 ```
 
 ### Camera → File
