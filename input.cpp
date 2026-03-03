@@ -85,6 +85,10 @@ public:
         outputs["wayland"] = 
             "queue ! waylandsink";
         
+        // 4c. Auto display (auto-selects best sink)
+        outputs["auto"] = 
+            "autovideosink";
+        
         // 4b. Display output (framebuffer fallback)
         outputs["display_fb"] = 
             "videoconvert ! video/x-raw,format=RGB16 ! "
@@ -288,6 +292,7 @@ int main(int argc, char *argv[]) {
         manager.listOutputs();
         
         std::cout << "\nExamples:" << std::endl;
+        std::cout << "  " << argv[0] << " file_vpu auto            # File to display (auto-select)" << std::endl;
         std::cout << "  " << argv[0] << " file_vpu display        # File to display (VPU decode)" << std::endl;
         std::cout << "  " << argv[0] << " file_vpu wayland        # File to Wayland surface" << std::endl;
         std::cout << "  " << argv[0] << " imx477 file_vpu        # Camera to file (VPU encode)" << std::endl;

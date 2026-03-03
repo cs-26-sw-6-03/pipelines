@@ -45,12 +45,17 @@ videoconvert ! vpuenc_h264 bitrate=3000 gop-size=30 ! h264parse ! rtph264pay con
 videoconvert ! x264enc bitrate=5000 ! h264parse ! qtmux ! filesink location=output.mp4
 ```
 
-### 4. Display Output (Wayland/KMS)
+### 4. Auto Display (auto-selects best sink)
+```bash
+autovideosink
+```
+
+### 4b. Display Output (Wayland/KMS)
 ```bash
 queue ! kmssink
 ```
 
-### 4b. Display Output (Wayland Surface)
+### 4c. Display Output (Wayland Surface)
 ```bash
 queue ! waylandsink
 ```
@@ -63,6 +68,13 @@ videoconvert ! video/x-raw,format=RGB16 ! fbdevsink device=/dev/fb0
 ---
 
 ## EXAMPLES
+
+### File → Auto Display
+```bash
+gst-launch-1.0 \
+    filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
+    autovideosink
+```
 
 ### File → Display
 ```bash

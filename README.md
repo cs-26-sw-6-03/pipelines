@@ -13,6 +13,7 @@ chmod +x create_test_video.sh
 ./create_test_video.sh
 
 # 3. Run with test file: ./gst_pipeline_manager <input> <output> [input_path] [output_path]
+./gst_pipeline_manager file_vpu auto test.mp4        # Auto display
 ./gst_pipeline_manager file_vpu display test.mp4     # KMS display
 ./gst_pipeline_manager file_vpu wayland test.mp4     # Wayland surface
 ./gst_pipeline_manager file_vpu file_vpu test.mp4 output.mp4
@@ -36,6 +37,7 @@ See [PIPELINES.md](PIPELINES.md) for all pipeline components.
 - `file_vpu` - File with VPU encode (H.264)
 - `network_udp` - UDP/RTP stream (hardware)
 - `file_generic` - Generic file (software encode)
+- `auto` - Auto-select best display
 - `display` - KMS display (DRM direct)
 - `wayland` - Wayland surface
 - `display_fb` - Framebuffer display
