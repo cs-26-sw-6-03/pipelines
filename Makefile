@@ -6,7 +6,7 @@ CXXFLAGS = -Wall -std=c++11
 GSTREAMER_FLAGS = $(shell pkg-config --cflags --libs gstreamer-1.0)
 
 TARGET = gst_pipeline_manager
-SRC = main.cpp
+SRC = input.cpp
 
 all: $(TARGET)
 
