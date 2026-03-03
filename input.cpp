@@ -60,14 +60,14 @@ public:
         // 1. File output with VPU encoding (H.264)
         outputs["file_vpu"] = 
             "imxvideoconvert_g2d ! video/x-raw,format=NV12 ! "
-            "vpuenc bitrate=5000 gop-size=30 ! "
+            "vpuenc_h264 bitrate=5000 gop-size=30 ! "
             "h264parse ! qtmux ! "
             "filesink location=output.mp4";
         
         // 2. Network UDP/RTP with hardware encoding
         outputs["network_udp"] = 
             "imxvideoconvert_g2d ! video/x-raw,format=NV12 ! "
-            "vpuenc bitrate=3000 gop-size=30 ! "
+            "vpuenc_h264 bitrate=3000 gop-size=30 ! "
             "h264parse ! rtph264pay config-interval=1 pt=96 ! "
             "udpsink host=192.168.1.100 port=5000";
         

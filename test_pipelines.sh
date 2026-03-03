@@ -13,8 +13,8 @@ fi
 echo "✓ GStreamer installed"
 
 # VPU encoder
-if gst-inspect-1.0 vpuenc &> /dev/null; then
-    echo "✓ VPU encoder (vpuenc)"
+if gst-inspect-1.0 vpuenc_h264 &> /dev/null; then
+    echo "✓ VPU encoder (vpuenc_h264)"
 else
     echo "✗ VPU encoder NOT found"
 fi
