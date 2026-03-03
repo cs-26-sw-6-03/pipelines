@@ -92,6 +92,11 @@ gst-launch-1.0 \
 ## CREATE TEST FILE
 
 ```bash
+# Quick way: run the script
+chmod +x create_test_video.sh
+./create_test_video.sh
+
+# Manual: 10-second test video
 gst-launch-1.0 videotestsrc num-buffers=300 ! video/x-raw,width=1920,height=1080,framerate=30/1 ! \
     imxvideoconvert_g2d ! video/x-raw,format=NV12 ! \
     vpuenc bitrate=5000 gop-size=30 ! h264parse ! qtmux ! filesink location=test.mp4

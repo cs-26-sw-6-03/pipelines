@@ -5,12 +5,19 @@ Simple, swappable input and output pipelines for the Debix Model B.
 ## Quick Start
 
 ```bash
-# Build
+# 1. Build
 make
 
-# Run: ./gst_pipeline_manager <input> <output>
-./gst_pipeline_manager file_vpu display
-./gst_pipeline_manager imx477 file_vpu
+# 2. Create a test video file
+chmod +x create_test_video.sh
+./create_test_video.sh
+
+# 3. Run with test file: ./gst_pipeline_manager <input> <output> [input_path] [output_path]
+./gst_pipeline_manager file_vpu display test.mp4
+./gst_pipeline_manager file_vpu file_vpu test.mp4 output.mp4
+
+# Or with camera (when attached)
+./gst_pipeline_manager imx477 file_vpu "" output.mp4
 ./gst_pipeline_manager webcam display
 ```
 
@@ -37,3 +44,4 @@ See [PIPELINES.md](PIPELINES.md) for all pipeline components.
 - `input.cpp` - C++ pipeline manager
 - `Makefile` - Build configuration
 - `test_pipelines.sh` - Test hardware availability
+- `create_test_video.sh` - Create a test video file
