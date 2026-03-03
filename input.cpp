@@ -38,8 +38,7 @@ public:
         // 1. File input with VPU decode (H.264)
         inputs["file_vpu"] = 
             "filesrc location=input.mp4 ! "
-            "qtdemux ! h264parse ! vpudec ! "
-            "imxvideoconvert_g2d ! video/x-raw,format=NV12";
+            "qtdemux ! h264parse ! vpudec ! video/x-raw";
         
         // 2. Camera IMX477 (MIPI)
         inputs["imx477"] = 
@@ -49,23 +48,25 @@ public:
         // 3. Generic file input
         inputs["file_generic"] = 
             "filesrc location=input.mp4 ! "
-            "decodebin ! videoconvert ! video/x-raw,format=NV12";
+            "decodebin ! videoconvert ! video/x-raw";
         
         // 4. Generic webcam
         inputs["webcam"] = 
             "v4l2src device=/dev/video0 ! "
-            "videoconvert ! video/x-raw,format=NV12";
+            "videoconvert ! video/x-raw";
     }
     
     void initializeOutputs() {
         // 1. File output with VPU encoding (H.264)
         outputs["file_vpu"] = 
+            "imxvideoconvert_g2d ! video/x-raw,format=NV12 ! "
             "vpuenc bitrate=5000 gop-size=30 ! "
             "h264parse ! qtmux ! "
             "filesink location=output.mp4";
         
         // 2. Network UDP/RTP with hardware encoding
         outputs["network_udp"] = 
+            "imxvideoconvert_g2d ! video/x-raw,format=NV12 ! "
             "vpuenc bitrate=3000 gop-size=30 ! "
             "h264parse ! rtph264pay config-interval=1 pt=96 ! "
             "udpsink host=192.168.1.100 port=5000";
