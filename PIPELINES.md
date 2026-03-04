@@ -18,7 +18,7 @@ v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=30/1,f
 
 ### 3. Generic File Input
 ```bash
-filesrc location=input.mp4 ! decodebin ! videoconvert
+filesrc location=input.mp4 ! qtdemux ! h264parse ! avdec_h264 ! videoconvert
 ```
 
 ### 4. Generic Webcam
@@ -52,13 +52,19 @@ videoconvert ! autovideosink
 
 ### 4b. Display Output (Wayland/KMS)
 ```bash
-queue ! kmssink
+queue ! videoconvert ! kmssink connector-id=0
+```
+
+**Note:** Use `connector-id` to select display output. Find available connectors:
+```bash
+modetest -c  # or gst-inspect-1.0 kmssink
 ```
 
 ### 4c. Display Output (Wayland Surface)
 ```bash
-queue ! waylandsink
+queue ! videoconvert ! waylandsink display=wayland-0 fullscreen=false
 ```
+Creates a window in your Wayland compositor (GNOME/Weston/etc.)
 
 ### 4b. Display Output (Framebuffer - fallback)
 ```bash
@@ -80,14 +86,14 @@ gst-launch-1.0 \
 ```bash
 gst-launch-1.0 \
     filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
-    queue ! kmssink
+    queue ! videoconvert ! kmssink connector-id=0
 ```
 
 ### File → Wayland
 ```bash
 gst-launch-1.0 \
     filesrc location=input.mp4 ! qtdemux ! h264parse ! vpudec ! \
-    queue ! waylandsink
+    queue ! videoconvert ! waylandsink display=wayland-0 fullscreen=false
 ```
 
 ### Camera → File
@@ -108,14 +114,14 @@ gst-launch-1.0 \
 ```bash
 gst-launch-1.0 \
     v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=30/1,format=NV12 ! \
-    kmssink
+    videoconvert ! kmssink connector-id=0
 ```
 
 ### Camera → Wayland
 ```bash
 gst-launch-1.0 \
     v4l2src device=/dev/video0 ! video/x-raw,width=1920,height=1080,framerate=30/1,format=NV12 ! \
-    waylandsink
+    videoconvert ! waylandsink display=wayland-0 fullscreen=false
 ```
 
 ---
@@ -138,5 +144,5 @@ gst-launch-1.0 videotestsrc num-buffers=300 ! video/x-raw,width=1920,height=1080
 
 ```bash
 gst-launch-1.0 udpsrc port=5000 caps="application/x-rtp,media=video,encoding-name=H264,clock-rate=90000,payload=96" ! \
-    rtph264depay ! h264parse ! vpudec ! waylandsink
+    rtph264depay ! h264parse ! vpudec ! videoconvert ! waylandsink display=wayland-0 fullscreen=true
 ```

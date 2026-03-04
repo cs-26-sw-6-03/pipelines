@@ -48,7 +48,7 @@ public:
         // 3. Generic file input
         inputs["file_generic"] = 
             "filesrc location=input.mp4 ! "
-            "decodebin ! videoconvert";
+            "qtdemux ! h264parse ! avdec_h264 ! videoconvert";
         
         // 4. Generic webcam
         inputs["webcam"] = 
@@ -79,11 +79,11 @@ public:
         
         // 4. Display output (Wayland/KMS)
         outputs["display"] = 
-            "queue ! videoconvert ! kmssink";
+            "queue ! videoconvert ! kmssink connector-id=0";
         
         // 4b. Display output (Wayland surface)
         outputs["wayland"] = 
-            "queue ! videoconvert ! waylandsink";
+            "queue ! videoconvert ! waylandsink display=wayland-0 fullscreen=true";
         
         // 4c. Auto display (auto-selects best sink)
         outputs["auto"] = 
